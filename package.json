@@ -18,7 +18,8 @@
     "dependencies": {
       "jsonp": "0.0.1",
       "seedit-config": "0.1.1",
-      "handlebarser": "1.3.0"
+      "handlebarser": "1.3.0",
+      "eventor": "0.0.3"
     },
     "devDependencies": {
       "expect.js": "0.3.1"
