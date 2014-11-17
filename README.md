@@ -22,6 +22,8 @@ var seeditOoxx = require('seedit-ooxx');
 + ***data-easing***  缓动效果
 + ***data-placeholder*** 占位广告sid，当没有广告时使用这个
 
++ ***data-rendered*** 不需要关注，只读，当该广告位渲染成功后值会变成"true"
+
 ## 广告模板约定
 
 ```html

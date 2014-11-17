@@ -1,7 +1,7 @@
 var jsonp = require('jsonp'),
     Config = require('seedit-config'),
     Handlebars = require('handlebarser'),
-    baseAPI = 'http://common.bozhong.com/restful/ad',
+    baseAPI = Config.getSiteUrl('common') + '/restful/ad',
     sidAPI = baseAPI + '/space.jsonp',
     gidAPI = baseAPI + '/group.jsonp?gid=';
 
@@ -23,13 +23,14 @@ var getBySid = exports.getBySid = function(sid, callback) {
 
 
 // render data
-var render = exports.render = function(target, data) {
+var render = exports.render = function(target, data, cb) {
     var $target = document.getElementById(target);
     var sid = $target.getAttribute('data-sid');
     var tpl = document.getElementById('ooxx-tpl-' + sid).innerHTML;
     tpl = filterParams(tpl);
     var html = Handlebars.compile(tpl)(data);
     $target.innerHTML = html;
+    cb && cb();
 };
 
 // 变换参数名，在模板中隐藏 ad_的前缀
@@ -46,10 +47,19 @@ function ooxx(sids) {
     var _this = this;
     _this.sids = sids;
     _this.fetch(sids);
-    _this.on('space_fetched', function(data) {
+    _this.
+    on('space_fetched', function(data) {
         render('ooxx-' + data.id, {
-            list: data.data
+            list: data.data,
+            space: {
+                name: data.space.name
+            }
+        }, function() {
+            _this.emit('space_rendered', data.id);
         });
+    }).
+    on('space_rendered', function(id) {
+        document.getElementById('ooxx-' + id).setAttribute('data-rendered', 'true');
     });
 };
 
@@ -63,10 +73,28 @@ ooxx.prototype.fetch = function(sids) {
             var item = data[i][0];
             _this.emit('space_fetched', {
                 id: i.replace('space_', ''),
-                data: item.space_ad_info
+                data: item.space_ad_info,
+                space: {
+                    name: item.space_name
+                }
             });
         }
     });
 };
 
+function getSidByDom(callback) {
+    var sids = [];
+    seajs.use('jquery', function($) {
+        $('div[data-sid]').each(function() {
+            sids.push($(this).data('sid'));
+        });
+        callback(sids.join('|'));
+    });
+};
+
 module.exports = ooxx;
+module.exports.render = function() {
+    getSidByDom(function(sids) {
+        return new ooxx(sids);
+    });
+};
