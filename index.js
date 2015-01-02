@@ -5,6 +5,12 @@ var jsonp = require('jsonp'),
     sidAPI = baseAPI + '/space.jsonp',
     gidAPI = baseAPI + '/group.jsonp?gid=';
 
+var Uuid = require('i-tracker/lib/uuid');
+Uuid.init({
+    cookieDomain: Config.getMainDomain()
+});
+var uuid = Uuid.get();
+
 var eventor = require('eventor');
 
 // @todo 效果选择
@@ -14,7 +20,8 @@ var eventor = require('eventor');
 var getBySid = exports.getBySid = function(sid, callback) {
     var begin = new Date().getTime();
     jsonp(sidAPI, {
-        space: sid
+        space: sid,
+        cookie: uuid
     }, '__c', function(data) {
         var length = new Date().getTime() - begin;
         callback && callback(data.data, length);
@@ -29,8 +36,8 @@ var render = exports.render = function(target, data, cb) {
     var tpl = document.getElementById('ooxx-tpl-' + sid).innerHTML;
     tpl = filterParams(tpl);
     var html = Handlebars.compile(tpl)(data);
-    $target.innerHTML = html;
-    cb && cb();
+    $target.innerHTML = /<li>/.test(tpl) ? ('<ul id="ooxx-' + sid + '-ul">' + html + '</ul>') : html;
+    cb && cb(data, tpl);
 };
 
 // 变换参数名，在模板中隐藏 ad_的前缀
@@ -54,7 +61,28 @@ function ooxx(sids) {
             space: {
                 name: data.space.name
             }
-        }, function() {
+        }, function(datas, tpl) {
+            // 图片大于一个变成轮播的
+            var target = null;
+            var slide = 'div';
+            var dots = document.getElementById('ooxx-' + data.id).getAttribute('data-dots') === 'true';
+            if (datas.list.length) {
+                if (/<li>/.test(tpl)) {
+                    target = '#ooxx-' + data.id + '-ul';
+                    slide = 'li';
+                } else {
+                    target = '#ooxx-' + data.id;
+                    slide = 'a';
+                }
+                seajs.use('slicker/1.3.14/index', function(Slicker) {
+                    new Slicker(target, {
+                        slide: slide,
+                        autoplay: true,
+                        dots: dots,
+                        fade: false
+                    });
+                });
+            }
             _this.emit('space_rendered', data.id);
         });
     }).
@@ -71,9 +99,16 @@ ooxx.prototype.fetch = function(sids) {
         _this.emit('space_fetched_time', time);
         for (var i in data) {
             var item = data[i][0];
+            var rs = [];
+            // 过滤掉联盟广告条目
+            for (var j = 0; j < item.space_ad_info.length; j++) {
+                if (item.space_ad_info[j]['ad_type'] !== 3) {
+                    rs.push(item.space_ad_info[j]);
+                }
+            }
             _this.emit('space_fetched', {
                 id: i.replace('space_', ''),
-                data: item.space_ad_info,
+                data: rs,
                 space: {
                     name: item.space_name
                 }

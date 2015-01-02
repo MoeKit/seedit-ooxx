@@ -5,6 +5,7 @@
 ## Normal usage
 
 ````html
+<link rel="stylesheet" href="../slicker/1.3.14/slick/slick.css">
  <script type="seedit/template" id="ooxx-tpl-70">
  <ul>
     {{#each list}}
@@ -24,7 +25,7 @@
 
 <h3>贴间通栏</h3>
 
-<div data-sid="77" id="ooxx-77" data-page="" data-block="" data-effect="slide" class="ooxx-loading" data-rendered="false"></div>
+<div data-sid="77" id="ooxx-77" data-page="" data-block="" data-effect="slide" class="ooxx-loading" data-rendered="false" style="width:680px;height:90px;"></div>
 <script type="seedit/template" id="ooxx-tpl-77">
 {{#each list}}
     <a href="{{link}}" target="_blank" data-track="OOXX/{{../space.name}}/{{name}}" draggable="true">
