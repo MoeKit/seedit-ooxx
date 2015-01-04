@@ -10,7 +10,7 @@ Uuid.init({
     cookieDomain: Config.getMainDomain()
 });
 var uuid = Uuid.get();
-
+var defaultTpl = require('./ooxx.tpl');
 var eventor = require('eventor');
 
 // @todo 效果选择
@@ -33,7 +33,12 @@ var getBySid = exports.getBySid = function(sid, callback) {
 var render = exports.render = function(target, data, cb) {
     var $target = document.getElementById(target);
     var sid = $target.getAttribute('data-sid');
-    var tpl = document.getElementById('ooxx-tpl-' + sid).innerHTML;
+    var tpl = defaultTpl;
+    // check if tpl exists
+    var tplTarget = document.getElementById('ooxx-tpl-' + sid);
+    if (tplTarget) {
+        tpl = tplTarget.innerHTML;
+    }
     tpl = filterParams(tpl);
     var html = Handlebars.compile(tpl)(data);
     $target.innerHTML = /<li>/.test(tpl) ? ('<ul id="ooxx-' + sid + '-ul">' + html + '</ul>') : html;
@@ -70,6 +75,9 @@ function ooxx(sids) {
                 if (/<li>/.test(tpl)) {
                     target = '#ooxx-' + data.id + '-ul';
                     slide = 'li';
+                } else if (/ooxx-item/.test(tpl)) {
+                    target = '#ooxx-' + data.id;
+                    slide = 'div';
                 } else {
                     target = '#ooxx-' + data.id;
                     slide = 'a';

@@ -25,8 +25,8 @@
 
 <h3>贴间通栏</h3>
 
-<div data-sid="77" id="ooxx-77" data-page="" data-block="" data-effect="slide" class="ooxx-loading" data-rendered="false" style="width:680px;height:90px;"></div>
-<script type="seedit/template" id="ooxx-tpl-77">
+<div data-sid="62" id="ooxx-62" data-page="" data-block="" data-effect="slide" class="ooxx-loading" data-rendered="false" style="width:680px;height:90px;"></div>
+<script type="seedit/template" id="ooxx-tpl-62">
 {{#each list}}
     <a href="{{link}}" target="_blank" data-track="OOXX/{{../space.name}}/{{name}}" draggable="true">
         <img src="{{content}}">
@@ -39,7 +39,7 @@
 ````javascript
 seajs.use('index', function(seeditOoxx) {
 var ooxx = seeditOoxx.render();
-   /** var ooxx = new seeditOoxx('70|77');
+   /** var ooxx = new seeditOoxx('70|62');
    ooxx.
    on('space_fetched',function(data){
        // 单个广告位数据
