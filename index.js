@@ -1,13 +1,15 @@
+//@todo 进行广告位数据为空的上报
+//@todo 进行广告位接口500或者其他错误的上报
+
 var jsonp = require('jsonp'),
     Config = require('seedit-config'),
     Handlebars = require('handlebarser'),
-    baseAPI = Config.getSiteUrl('common') + '/restful/ad',
+    baseAPI = Config.getSiteUrl('show') + '/restful/ad',
     sidAPI = baseAPI + '/space.jsonp',
     gidAPI = baseAPI + '/group.jsonp?gid=';
-
 var $ = require('jquery');
 
-var Uuid = require('i-tracker/lib/iuuid');
+var Uuid = require('i-tracker/lib/uuid');
 Uuid.init({
     cookieDomain: Config.getMainDomain()
 });
@@ -44,12 +46,15 @@ function ooxx(sids) {
     _this.sids = sids;
     _this.fetch(sids);
     _this._on_fetched();
+    _this.on('space_empty', function() {
+        //
+    });
 };
 
 eventor.mixTo(ooxx);
 
-ooxx.prototype._on_fetched = function(){
-	var _this = this;
+ooxx.prototype._on_fetched = function() {
+    var _this = this;
     _this.
     on('space_fetched', function(data) {
         render('ooxx-' + data.id, {
@@ -61,8 +66,8 @@ ooxx.prototype._on_fetched = function(){
             // 图片大于一个变成轮播的
             var target = null;
             var slide = 'div';
-            var dots = document.getElementById('ooxx-' + data.id).getAttribute('data-dots') === 'true';
-            if (datas.list.length>1) {
+            var dots = document.getElementById('ooxx-' + data.id) && document.getElementById('ooxx-' + data.id).getAttribute('data-dots') === 'true';
+            if (datas.list.length > 1) {
                 if (/<li>/.test(tpl)) {
                     target = '#ooxx-' + data.id + '-ul';
                     slide = 'li';
@@ -76,13 +81,15 @@ ooxx.prototype._on_fetched = function(){
 
 
                 seajs.use('slicker/1.3.14/index', function(Slicker) {
-                    new Slicker(target, {
-                        slide: slide,
-                        autoplay: true,
-                        dots: dots,
-                        dotsClass: 'slick-dots-wrap',
-                        fade: false
-                    });
+                    if (Slicker) {
+                        new Slicker(target, {
+                            slide: slide,
+                            autoplay: true,
+                            dots: dots,
+                            dotsClass: 'slick-dots-wrap',
+                            fade: false
+                        });
+                    }
                 });
             }
             _this.emit('space_rendered', data.id);
@@ -97,6 +104,23 @@ ooxx.prototype._on_fetched = function(){
 ooxx.prototype.fetch = function(sids) {
     var _this = this;
     getBySid(sids, function(data, time) {
+
+        // 遍历div，如果父级带有data-auto-hide就隐藏
+        setTimeout(function() {
+            $('div[data-sid]').each(function() {
+                if ($(this).text()) {} else {
+                    var $parent = $(this).closest('[data-auto-hide]');
+                    if ($parent.attr('data-auto-hide') === 'true') {
+                        $parent.hide();
+                    }
+                }
+            });
+        }, 500);
+
+
+        if (!data) {
+            return _this.emit('space_empty');
+        }
         _this.emit('space_fetched_time', time);
         for (var i in data) {
             var item = data[i][0];
@@ -115,6 +139,8 @@ ooxx.prototype.fetch = function(sids) {
                 }
             });
         }
+
+
     });
 };
 
@@ -124,11 +150,11 @@ ooxx.prototype.fetch = function(sids) {
 function getSidByDom(callback) {
     var sids = [];
     $('div[data-sid]').each(function() {
-    	if(!$(this).text()){
-    		sids.push($(this).data('sid'));
-    	}else{
-    		// 处理成轮播
-    	}
+        if (!$(this).text()) {
+            sids.push($(this).data('sid'));
+        } else {
+            // 处理成轮播
+        }
     });
     callback(sids.join('|'));
 };

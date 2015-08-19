@@ -16,13 +16,13 @@
   "spm": {
     "main": "index.js",
     "dependencies": {
-      "jsonp": "0.0.1",
-      "seedit-config": "0.1.1",
-      "handlebarser": "1.3.0",
-      "eventor": "0.0.3",
-      "jquery": "1.8.3",
+      "jsonp": "~0.0.1",
+      "seedit-config": "~0.1.1",
+      "handlebarser": "~1.3.0",
+      "eventor": "~0.0.3",
+      "jquery": "~1.8.3",
       "slicker": "1.3.14",
-      "i-tracker": "0.0.1"
+      "i-tracker": "~0.0.1"
     },
     "devDependencies": {
       "expect.js": "0.3.1"

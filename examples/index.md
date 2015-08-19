@@ -12,7 +12,7 @@
     <li class="ooxx-item-wrap" style="display:block;background-color:{{expand.backgroundColor}}">
         <div class="ooxx-item" style="display:block;background:url({{content}}) top center no-repeat">
             <a href="{{link}}" target="_blank"
-                       data-track="OOXX/{{../space.name}}/{{name}}" style="display:block;width:100%;height:250px;">&nbsp;</a>
+                       data-track="OOXX/{{sid}}/{{id}}" style="display:block;width:100%;height:250px;">&nbsp;</a>
         </div>
     </li>
     {{/each}}
@@ -21,14 +21,16 @@
 
 <h3>轮播</h3>
 
-<div data-sid="70" id="ooxx-70" data-page="" data-block="" data-effect="slide" class="ooxx-loading" data-rendered="false"></div>
+<div data-sid="62" id="ooxx-62" data-page="" data-block="" data-effect="slide" class="ooxx-loading" data-rendered="false"></div>
 
 <h3>贴间通栏</h3>
+<div data-auto-hide="true">
+  <div data-sid="79" id="ooxx-79" data-page="" data-block="" data-effect="slide" class="ooxx-loading" data-rendered="false" style="width:980px;height:250px;" data-dots="true"></div>
+</div>
 
-<div data-sid="62" id="ooxx-62" data-page="" data-block="" data-effect="slide" class="ooxx-loading" data-rendered="false" style="width:680px;height:90px;"></div>
 <script type="seedit/template" id="ooxx-tpl-62">
 {{#each list}}
-    <a href="{{link}}" target="_blank" data-track="OOXX/{{../space.name}}/{{name}}" draggable="true">
+    <a href="{{link}}" target="_blank" data-track="OOXX/{{sid}}/{{id}}">
         <img src="{{content}}">
     </a>
 {{/each}}
@@ -37,7 +39,7 @@
 ````
 
 ````javascript
-seajs.use('index', function(seeditOoxx) {
+var seeditOoxx = require('seedit-ooxx');
 var ooxx = seeditOoxx.render();
    /** var ooxx = new seeditOoxx('70|62');
    ooxx.
@@ -53,5 +55,4 @@ var ooxx = seeditOoxx.render();
    on('all',function(a,b,c){
    console.log(a,b,c);
    }); **/
-});
 ````
